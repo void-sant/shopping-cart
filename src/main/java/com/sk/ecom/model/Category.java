@@ -4,31 +4,25 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
-public class OrderAddress {
-	
-
+public class Category {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	private String firstName;
+	private String name;
 
-	private String lastName;
+	private String imageName;
 
-	private String email;
-
-	private String mobileNo;
-
-	private String address;
-
-	private String city;
-
-	private String state;
-
-	private String pincode;
+	private Boolean isActive;
 
 }
