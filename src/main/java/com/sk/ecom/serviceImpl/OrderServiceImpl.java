@@ -3,9 +3,12 @@ package com.sk.ecom.serviceImpl;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.sk.ecom.model.Cart;
@@ -15,6 +18,7 @@ import com.sk.ecom.model.ProductOrder;
 import com.sk.ecom.repository.CartRepository;
 import com.sk.ecom.repository.ProductOrderRepository;
 import com.sk.ecom.service.OrderService;
+import com.sk.ecom.util.CommonUtil;
 import com.sk.ecom.util.OrderStatus;
 
 @Service
@@ -25,6 +29,9 @@ public class OrderServiceImpl implements OrderService{
 	
 	@Autowired
 	private CartRepository cartRepository;
+	
+	@Autowired
+	private CommonUtil commonUtil;
 
 	@Override
 	public void saveOrder(Integer userid, OrderRequest orderRequest) throws Exception {
@@ -54,40 +61,44 @@ public class OrderServiceImpl implements OrderService{
 			order.setOrderAddress(address);
 			
 			ProductOrder saveOrder = orderRepository.save(order);
-			//sendMailForProductOrder(saveOrder, "success");
-
+			commonUtil.sendMailForProductOrder(saveOrder, "success");
 		}
 		
 	}
 
 	@Override
 	public List<ProductOrder> getOrdersByUser(Integer userId) {
-		// TODO Auto-generated method stub
-		return null;
+		List<ProductOrder> orders = orderRepository.findByUserId(userId);
+		return orders;
 	}
 
 	@Override
 	public ProductOrder updateOrderStatus(Integer id, String status) {
-		// TODO Auto-generated method stub
+		Optional<ProductOrder> findById = orderRepository.findById(id);
+		if (findById.isPresent()) {
+			ProductOrder productOrder = findById.get();
+			productOrder.setStatus(status);
+			ProductOrder updateOrder = orderRepository.save(productOrder);
+			return updateOrder;
+		}
 		return null;
+
 	}
 
 	@Override
 	public List<ProductOrder> getAllOrders() {
-		// TODO Auto-generated method stub
-		return null;
+		return orderRepository.findAll();
 	}
 
 	@Override
 	public ProductOrder getOrdersByOrderId(String orderId) {
-		// TODO Auto-generated method stub
-		return null;
+		return orderRepository.findByOrderId(orderId);
 	}
 
 	@Override
 	public Page<ProductOrder> getAllOrdersPagination(Integer pageNo, Integer pageSize) {
-		// TODO Auto-generated method stub
-		return null;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+		return orderRepository.findAll(pageable);
 	}
 
 }
